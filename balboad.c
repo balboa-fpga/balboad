@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stddef.h>
 #include <string.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -22,6 +23,7 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/un.h>
 
 #include "../libbalboa/balboa-int.h" // for BALBOA_DEFAULT_PORT
 
@@ -172,11 +174,18 @@ char *o_sockpath = BALBOA_DEFAULT_PORT;
 int setup_listen(void)
 {
     int sock, ret;
+    struct sockaddr_un sa;
+    int socklen;
+
+    sa.sun_family = AF_UNIX;
+    strcpy(sa.sun_path, o_sockpath);
+    socklen = offsetof(struct sockaddr_un, sun_path) + strlen(o_sockpath) + 1;
 
     sock = socket(AF_LOCAL, SOCK_STREAM, 0);
     if (sock == -1)
         die("socket(AF_LOCAL): %s\n", strerror(errno));
-    ret = bind(sock, (struct sockaddr *)o_sockpath, strlen(o_sockpath));
+    unlink(o_sockpath);
+    ret = bind(sock, (struct sockaddr *)&sa, socklen);
     if (ret == -1)
         die("bind(%s): %s\n", o_sockpath, strerror(errno));
     ret = listen(sock, 10);
