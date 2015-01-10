@@ -237,21 +237,37 @@ void handle_failure(int fd)
 
 void eim_enable(void)
 {
+    if (o_fake) {
+        verbose("faking out eim_enable\n");
+        return;
+    }
     // XXX devmem twiddles to enable mapping
 }
 
 void eim_disable(void)
 {
+    if (o_fake) {
+        verbose("faking out eim_disable\n");
+        return;
+    }
     // XXX devmem twiddles to disable mapping
 }
 
 void fpga_enable(void)
 {
+    if (o_fake) {
+        verbose("faking out fpga_enable\n");
+        return;
+    }
     // XXX gpio twiddles to assert FPGA reset
 }
 
 void fpga_disable(void)
 {
+    if (o_fake) {
+        verbose("faking out fpga_disable\n");
+        return;
+    }
     // XXX gpio twiddles to deassert FPGA reset
 }
 
@@ -261,6 +277,10 @@ void load_bitstream(const char *bits, int n)
     int i, ret;
     int blksz = 128;
 
+    if (o_fake) {
+        verbose("faking out writing bitstream to SPI\n");
+        return;
+    }
     fd = open(o_spidev, O_WRONLY);
     if (fd == -1)
         die("%s: %s\n", o_spidev, strerror(errno));
