@@ -131,6 +131,7 @@ void process_opt_line(char *buf)
     i = strspn(buf, " \t");
     opt = buf + i;
     i = strcspn(buf + i, " \t");
+    buf[i] = '\0';
     val = buf + i;
     val = val + strspn(opt, " \t");
 
