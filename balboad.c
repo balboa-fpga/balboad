@@ -56,13 +56,9 @@ void verbose(const char *fmt, ...)
 
 int o_daemonize = 1;
 int o_verbose = 0;
+int o_fake = 0;
 const char *o_streamdir = "/usr/share/balboa";
 const char *o_spidev = "/dev/spidev.2";
-
-void usage(const char *cmd)
-{
-    die("Usage: %s [-d bitstreamdir] [-f configfile]\n", cmd);
-}
 
 char *read_line(FILE *f)
 {
@@ -374,18 +370,26 @@ void event_loop(int listensock)
     }
 }
 
+void usage(const char *cmd)
+{
+    die("Usage: %s -[div] [-s bitstreamdir] [-f configfile]\n", cmd);
+}
+
 int main(int argc, char **argv)
 {
     int c, sock;
     char *configfile = "/etc/balboad.conf";
 
-    while ((c = getopt(argc, argv, "df:s:v")) != EOF) {
+    while ((c = getopt(argc, argv, "df:is:v")) != EOF) {
         switch (c) {
         case 'd':
             o_daemonize = 0;
             break;
         case 'f':
             configfile = optarg;
+            break;
+        case 'i':
+            o_fake = 1;
             break;
         case 's':
             o_streamdir = optarg;
