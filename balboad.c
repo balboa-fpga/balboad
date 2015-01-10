@@ -65,7 +65,9 @@ char *read_line(FILE *f)
     char buf[1024], *p;
     int n;
 
-    fgets(buf, sizeof(buf), f);
+    if (fgets(buf, sizeof(buf), f) == NULL)
+        return 0;
+
     n = strlen(buf);
 
     if (n == 0) return 0;
