@@ -26,6 +26,7 @@
 #include <sys/un.h>
 
 #include "../libbalboa/balboa-int.h" // for BALBOA_DEFAULT_PORT
+#include "novena-eim.h"
 
 double rtc(void)
 {
@@ -206,6 +207,7 @@ int get_new_client(int sock)
     n = read(fd, buf, sizeof(buf));
     if (n == -1)
         die("read(%d): %s\n", fd, strerror(errno));
+    buf[n] = '\0';
     if (strcmp(buf, "hi\n")) {
         fprintf(stderr, "bad hello from client: '%s'\n", buf);
         return -1;
@@ -296,7 +298,8 @@ void load_bitstream(const char *bits, int n)
     close(fd);
 }
 
-int load_core(const char *corename)
+int load_core(const char *corename, unsigned long long *win,
+        unsigned long long *size)
 {
     char *bitstream;
     int bitstream_len;
@@ -316,38 +319,71 @@ int load_core(const char *corename)
     fpga_enable();
     eim_enable();
 
+    *win = EIM_CS0_BASE;
+    *size = EIM_CS0_SIZE;
+
     return 1;
 }
 
-void handle_core(int fd, const char *corename)
+int client_send(int client_fd, const char *fmt, ...)
+{
+    va_list ap;
+    char buf[1024];
+    int n, ret;
+
+    va_start(ap, fmt);
+    n = vsnprintf(buf, sizeof buf, fmt, ap);
+    va_end(ap);
+    ret = write(client_fd, buf, n);
+    if (ret < n) {
+        handle_failure(client_fd);
+        return 0;
+    }
+    return 1;
+}
+
+void handle_success(int client_fd)
+{
+    write(client_fd, "ok\n", 3);
+}
+
+void handle_core(int client_fd, const char *corename)
 {
     char core[1024];
-    int i;
+    int i, ret;
+    unsigned long long window, size;
 
     strcpy(core, corename);
     i = strcspn(core, "/ \t\n\r");
-    core[i] = '\0';
+    if (i > 0)
+        core[i] = '\0';
 
     verbose("loading core '%s'\n", core);
-    load_core(core);
+    ret = load_core(core, &window, &size);
+    if (ret == 1) {
+        handle_failure(client_fd);
+    } else {
+        client_send(client_fd, "ok core %s mem 0x%llx size 0x%llx\n",
+                core, window, size);
+    }
 }
 
-int handle_event(int fd)
+int handle_event(int client_fd)
 {
     char buf[1024];
     int n;
 
-    n = read(fd, buf, sizeof buf);
+    n = read(client_fd, buf, sizeof buf);
     if (n == -1)
-        die("read(%d): %s\n", fd, strerror(errno));
+        die("read(%d): %s\n", client_fd, strerror(errno));
     buf[n] = '\0';
     if (n == 0)
         return -1;
 
     if (beginswith(buf, "core")) {
-        handle_core(fd, buf + 5);
+        handle_core(client_fd, buf + 5);
     } else {
-        handle_failure(fd);
+        handle_failure(client_fd);
     }
     return 0;
 }
