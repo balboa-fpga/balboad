@@ -368,7 +368,7 @@ void event_loop(int listensock)
             if (clients[i] >= nfd)
                 nfd = clients[i] + 1;
         }
-        ret = select(nfd, &fds, &fds, 0, 0);
+        ret = select(nfd, &fds, 0, 0, 0);
         if (ret < 0)
             die("select: %s\n", strerror(errno));
         if (FD_ISSET(listensock, &fds)) {
