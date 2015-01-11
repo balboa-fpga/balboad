@@ -222,7 +222,7 @@ int beginswith(const char *a, const char *b)
 {
     int i;
 
-    for (i=0; b[i]; i++) {
+    for (i=0; a[i] && b[i]; i++) {
         if (a[i] != b[i])
             return 0;
     }
