@@ -1,4 +1,4 @@
-BALBOAD_SRCS := balboad.c
+BALBOAD_SRCS := balboad.c eim.c
 BALBOAD_OBJS := $(BALBOAD_SRCS:.c=.o)
 
 CFLAGS := -O2 -Wall -I.

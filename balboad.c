@@ -244,7 +244,7 @@ void eim_enable(void)
         verbose("faking out eim_enable\n");
         return;
     }
-    // XXX devmem twiddles to enable mapping
+    prep_eim();
 }
 
 void eim_disable(void)
