@@ -359,6 +359,13 @@ void handle_core(int client_fd, const char *corename)
     char core[1024];
     int i, ret;
     unsigned long long window, size;
+    char *devpath;
+
+    if (o_fake) {
+        devpath = "/dev/zero";
+    } else {
+        devpath = "/dev/mem";
+    }
 
     strcpy(core, corename);
     i = strcspn(core, "/ \t\n\r");
@@ -370,8 +377,8 @@ void handle_core(int client_fd, const char *corename)
     if (ret == 0) {
         handle_failure(client_fd);
     } else {
-        client_send(client_fd, "ok core %s mem 0x%llx size 0x%llx\n",
-                core, window, size);
+        client_send(client_fd, "ok core %s mem %s 0x%llx size 0x%llx\n",
+                core, devpath, window, size);
     }
 }
 
