@@ -360,7 +360,7 @@ void handle_core(int client_fd, const char *corename)
 
     verbose("loading core '%s'\n", core);
     ret = load_core(core, &window, &size);
-    if (ret == 1) {
+    if (ret == 0) {
         handle_failure(client_fd);
     } else {
         client_send(client_fd, "ok core %s mem 0x%llx size 0x%llx\n",
