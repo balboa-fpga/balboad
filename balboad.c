@@ -218,6 +218,7 @@ int get_new_client(int sock)
 
     return fd;
 }
+
 int beginswith(const char *a, const char *b)
 {
     int i;
@@ -298,6 +299,12 @@ void load_bitstream(const char *bits, int n)
     close(fd);
 }
 
+/*
+ * Load a bitstream from filesystem, reset the FPGA, write bitstream
+ * into FPGA, reenable FPGA access.
+ *
+ * Returns (in *win, *size) the physical address window to access the core.
+ */
 int load_core(const char *corename, unsigned long long *win,
         unsigned long long *size)
 {
