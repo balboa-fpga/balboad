@@ -1,4 +1,4 @@
-BALBOAD_SRCS := balboad.c eim.c
+BALBOAD_SRCS := balboad.c novena/eim.c
 BALBOAD_OBJS := $(BALBOAD_SRCS:.c=.o)
 
 CFLAGS := -O2 -Wall -I.
@@ -15,4 +15,4 @@ install: balboad
 	cp -f balboad $(INSTALLDIR)/bin/balboad
 
 clean:
-	rm -f balboad *.o
+	rm -f balboad *.o novena/*.o

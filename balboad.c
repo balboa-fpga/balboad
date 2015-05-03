@@ -26,7 +26,7 @@
 #include <sys/un.h>
 
 #include "../libbalboa/balboa-int.h" // for BALBOA_DEFAULT_PORT
-#include "novena-eim.h"
+#include "novena/novena-eim.h"
 
 double rtc(void)
 {

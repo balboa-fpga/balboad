@@ -5,4 +5,6 @@
 #define EIM_CS0_BASE 0x08040000
 #define EIM_CS0_SIZE (64 * 1024 * 1024)
 
+int prep_eim(void);
+
 #endif /* NOVENA_EIM_H_ */
