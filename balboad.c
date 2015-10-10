@@ -61,7 +61,8 @@ int o_daemonize = 1;
 int o_verbose = 0;
 int o_fake = 0;
 const char *o_streamdir = "/usr/share/balboa";
-const char *o_spidev = "/dev/spidev.2";
+//const char *o_spidev = "/dev/spidev.2";
+const char *o_spidev = "/dev/spidev2.0";
 
 char *read_line(FILE *f)
 {
@@ -484,7 +485,7 @@ int main(int argc, char **argv)
         }
     }
 
-    read_config(configfile);
+//    read_config(configfile);		//buggy - eg over writes default val with "yes"
 
     if (o_daemonize) daemonize();
 
